@@ -1,63 +1,107 @@
 const { keyboard } = require('puppeteer');
-
 const fs = require('fs');
 
 const message = "Olá, como vai?";
 let numbersMaturado = 0;
-
+let pageNew;
 
 async function getNumber(page){
+    pageNew = page
 
-    const fileContent = fs.readFileSync('./numeros.txt', 'utf-8');
-    const phoneNumbers = fileContent.split('\n');
-    for (const phoneNumber of phoneNumbers) {
+        const data = fs.readFileSync('./numeros.txt', 'utf8');
+        const phoneNumbers = data.split('\n').map(Number);
+
+    for (const phoneNumber of phoneNumbers){
         try{
-            await startChat(page, phoneNumber);
-            numbersMaturado++
-            console.log(`Foram ${numbersMaturado} Numeros Maturados!`);
-            fs.appendFileSync('./numero_maturado.txt', phoneNumber + '\n');
-            await removeNumber(phoneNumber)
-
+            await startChat(phoneNumber);
+            NumberSucellMaturado(phoneNumber);
+            removeNumber(phoneNumber);
         } catch (e) {
-            console.log(`Erro no numero: ${phoneNumber} ele era o numero ${numbersMaturado}`);
-            await removeNumber(phoneNumber)
-
-
+            console.log("ERRROOORRRR")
         }
-    }
+    };
+
+    console.log("Maturação concluida!")
 };
 
 
-async function startChat(page, number){
+async function startChat(numberAPI){
+    try {
+        await pageNew.waitForTimeout(2000);
+        await pageNew.waitForSelector('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._3Uu1_ > div > div.to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt > p');
 
-    await page.goto(`https://web.whatsapp.com/send?phone=${number}`);
+        await pageNew.evaluate((numberAPI) => {
+            const header = document.querySelector('#main > header');
+            const divBotao = header.querySelector('div._1yNrt');
+            divBotao.innerHTML += `<a href="https://web.whatsapp.com/send?phone=${numberAPI}">Proximo</a>`;
+        }, numberAPI);
 
-    await page.waitForSelector('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._3Uu1_', { timeout: 10000 });
-    await page.waitForSelector('#app > div > span:nth-child(2) > div > span > div > div > div > div');
-    await page.waitForTimeout(1000);
+        await pageNew.waitForSelector('#main > header > div._1yNrt > a')
 
-    await page.click('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._3Uu1_ > div > div.to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt > p');
-    await page.waitForTimeout(500);
+        await pageNew.waitForSelector('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._3Uu1_ > div > div.to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt > p')
+        await pageNew.waitForTimeout(1700);
 
-    for (const character of message) {
-        await page.keyboard.type(character);
-        await page.waitForTimeout(100);
+        await pageNew.click('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._3Uu1_ > div > div.to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt > p');
+        await pageNew.waitForTimeout(500);
+
+        for (const character of message) {
+            await pageNew.keyboard.type(character);
+            await pageNew.waitForTimeout(100);
+        }
+
+        await pageNew.waitForTimeout(2000);
+        await pageNew.waitForSelector('#main > header > div._1yNrt > a')
+        await pageNew.waitForTimeout(200);
+        await pageNew.click('#main > header > div._1yNrt > a')
+
+
+        await pageNew.waitForTimeout(1000);
+        const sendMessageButton = await pageNew.$('#app > div > span:nth-child(2) > div > span > div > div > div > div > div > div.p357zi0d.ns59xd2u.kcgo1i74.gq7nj7y3.lnjlmjd6.przvwfww.mc6o24uu.e65innqk.le5p0ye3 > div > button');
+
+        if (sendMessageButton) {
+            NextPhoneErro()
+        }
+        ;
+    } catch (e) {
+        console.log("Erro no 01")
     }
+};
+
+async function NumberSucellMaturado(NumberMatureted){
+    fs.appendFile('./numero_maturado.txt', `${NumberMatureted}\n`, (err) => {
+        if (err) throw err;
+        console.log(`${numbersMaturado} Numeros Maturados`);
+    });
+    numbersMaturado++
 }
 
-async function removeNumber(numberToRemove){
+async function NextPhoneErro(){
+try{
+    await pageNew.waitForSelector('#app > div > span:nth-child(2) > div > span > div > div > div > div > div > div.p357zi0d.ns59xd2u.kcgo1i74.gq7nj7y3.lnjlmjd6.przvwfww.mc6o24uu.e65innqk.le5p0ye3 > div > button');
+    await pageNew.click('#app > div > span:nth-child(2) > div > span > div > div > div > div > div > div.p357zi0d.ns59xd2u.kcgo1i74.gq7nj7y3.lnjlmjd6.przvwfww.mc6o24uu.e65innqk.le5p0ye3 > div > button');
 
-    const fileContent = fs.readFileSync('./numeros.txt', 'utf-8');
+
+    await pageNew.waitForTimeout('#main > header > div._1yNrt > a')
+    await pageNew.evaluate((selector) => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.remove();
+        }
+    }, '#main > header > div._1yNrt > a');
+    await pageNew.waitForTimeout(2000);
+
+} catch (e) {
+    console.log("Erro no 02")
+}
+};
+
+async function removeNumber(){
+    const fileContent = await fs.promises.readFile('./numeros.txt', 'utf8');
     const phoneNumbers = fileContent.split('\n');
-    const indexToRemove = phoneNumbers.indexOf(numberToRemove);
-    if (indexToRemove === -1) {
-        console.log(`O número ${numberToRemove} não foi encontrado na lista.`);
-        return;
-    }
+    const firstPhoneNumber = phoneNumbers.shift();
 
-    phoneNumbers.splice(indexToRemove, 1);
-    fs.writeFileSync('./numeros.txt', phoneNumbers.join('\n'));
-    console.log(`O número ${numberToRemove} foi removido da lista.`);
+    const newFileContent = phoneNumbers.join('\n');
+    await fs.promises.writeFile('./numeros.txt', newFileContent, 'utf8');
 };
 
 module.exports = getNumber;
