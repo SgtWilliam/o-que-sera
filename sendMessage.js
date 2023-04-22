@@ -20,6 +20,12 @@ async function sendMessage(page){
 };
 
 async function searchNumber(phone){
+
+    const min = 98000 ;
+    const max = 126000;
+
+    const numeroAleatorio = Math.floor(Math.random() * (max - min + 1)) + min;
+
     await pageNew.waitForTimeout(1000);
 
     await pageNew.click('#side > div._3gYev > div > div > div._2vDPL > div > div.to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp > p');
@@ -44,19 +50,23 @@ async function searchNumber(phone){
         await pageNew.waitForTimeout(300);
     }
 
+    await pageNew.waitForTimeout(2000);
     // Enviar
-    await pageNew.waitForTimeout(2000)
-    await removePhone()
+    await pageNew.click('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._2xy_p._3XKXx > button > span');
+
+    await pageNew.waitForTimeout(2000);
+    await removePhone();
     await pageNew.click('#side > div._3gYev > div > div > button > div._3xdht._1ZD3q > span');
 };
 
 async function phoneNotFound(phone){
     console.log(`${phone} Não foi maturado!`)
+    await removePhone()
     await pageNew.click('#side > div._3gYev > div > div > button > div._3xdht._1ZD3q > span');
 };
 
 async function removePhone(){
-    const fileContent = await fs.promises.readFile('./numeros.txt', 'utf8');
+    const fileContent = await fs.promises.readFile('./numero_maturado.txt', 'utf8');
     const phoneNumbers = fileContent.split('\n');
     const firstPhoneNumber = phoneNumbers.shift();
 
