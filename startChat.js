@@ -60,8 +60,7 @@ async function startChat(numberAPI){
 
         if (sendMessageButton) {
             NextPhoneErro()
-        }
-        ;
+        };
     } catch (e) {
         console.log("Erro no 01")
     }
@@ -78,8 +77,8 @@ async function NumberSucellMaturado(NumberMatureted){
 async function NextPhoneErro(){
 try{
     await pageNew.waitForSelector('#app > div > span:nth-child(2) > div > span > div > div > div > div > div > div.p357zi0d.ns59xd2u.kcgo1i74.gq7nj7y3.lnjlmjd6.przvwfww.mc6o24uu.e65innqk.le5p0ye3 > div > button');
+    await pageNew.waitForTimeout(1000);
     await pageNew.click('#app > div > span:nth-child(2) > div > span > div > div > div > div > div > div.p357zi0d.ns59xd2u.kcgo1i74.gq7nj7y3.lnjlmjd6.przvwfww.mc6o24uu.e65innqk.le5p0ye3 > div > button');
-
 
     await pageNew.waitForTimeout('#main > header > div._1yNrt > a')
     await pageNew.evaluate((selector) => {

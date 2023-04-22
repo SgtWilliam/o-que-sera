@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const getNumber = require('./startChat');
+const sendMessage = require('./sendMessage');
 
 
 (async () => {
@@ -18,25 +19,24 @@ const getNumber = require('./startChat');
     console.log("Logado com sucesso!");
     await page.waitForTimeout(2000);
 
-
-    await page.evaluate(() => {
-        const h1 = document.querySelector('#app > div > div > div._2Ts6i._2xAQV > div > div > div._2v9n- > div._3RpB9 > h1');
-        const a = document.createElement('a');
-        a.href = 'https://web.whatsapp.com/send?phone=5588992663419';
-        a.textContent = h1.textContent;
-        for (const attr of h1.attributes) {
-            a.setAttribute(attr.name, attr.value);
-        }
-        h1.replaceWith(a);
-    });
-
-    await page.waitForTimeout(2000);
-
-    await page.click('#app > div > div > div._2Ts6i._2xAQV > div > div > div._2v9n- > div._3RpB9 > a');
-    await page.waitForSelector('#main > div._2gzeB > div > div._5kRIK > div.n5hs2j7m.oq31bsqd.gx1rr48f.qh5tioqs > div._1-FMR._15WYQ.focusable-list-item > div');
+    await sendMessage(page);
+    // await page.evaluate(() => {
+    //     const h1 = document.querySelector('#app > div > div > div._2Ts6i._2xAQV > div > div > div._2v9n- > div._3RpB9 > h1');
+    //     const a = document.createElement('a');
+    //     a.href = 'https://web.whatsapp.com/send?phone=5588992663419';
+    //     a.textContent = h1.textContent;
+    //     for (const attr of h1.attributes) {
+    //         a.setAttribute(attr.name, attr.value);
+    //     }
+    //     h1.replaceWith(a);
+    // });
+    //
+    // await page.waitForTimeout(2000);
+    //
+    // await page.click('#app > div > div > div._2Ts6i._2xAQV > div > div > div._2v9n- > div._3RpB9 > a');
+    // await page.waitForSelector('#main > div._2gzeB > div > div._5kRIK > div.n5hs2j7m.oq31bsqd.gx1rr48f.qh5tioqs > div._1-FMR._15WYQ.focusable-list-item > div');
 
     //await browser.close();
-    await getNumber(page);
-
+    //await getNumber(page);
 
 })();
