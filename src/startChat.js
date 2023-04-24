@@ -5,17 +5,16 @@ const message = "Olá, como vai?";
 let numbersMaturado = 0;
 let pageNew;
 
-async function getNumber(page){
-    pageNew = page
+async function getNumber(page, patchFileCrua, savePatch){
+    pageNew = page;
 
-        const data = fs.readFileSync('./numeros.txt', 'utf8');
+        const data = fs.readFileSync(patchFileCrua, 'utf8');
         const phoneNumbers = data.split('\n').map(Number);
 
     for (const phoneNumber of phoneNumbers){
         try{
-            await startChat(phoneNumber);
-            NumberSucellMaturado(phoneNumber);
-            removeNumber(phoneNumber);
+            await startChat(phoneNumber, savePatch);
+            await removeNumber(phoneNumber, patchFileCrua);
         } catch (e) {
             console.log("ERRROOORRRR")
         }
@@ -25,7 +24,7 @@ async function getNumber(page){
 };
 
 
-async function startChat(numberAPI){
+async function startChat(numberAPI, savePatch){
     try {
         await pageNew.waitForTimeout(2000);
         await pageNew.waitForSelector('#main > footer > div._2lSWV._3cjY2.copyable-area > div > span:nth-child(2) > div > div._1VZX7 > div._3Uu1_ > div > div.to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt > p');
@@ -60,14 +59,18 @@ async function startChat(numberAPI){
 
         if (sendMessageButton) {
             NextPhoneErro()
+            return;
         };
+
+        await NumberSucellMaturado(numberAPI, savePatch);
+
     } catch (e) {
         console.log("Erro no 01")
     }
 };
 
-async function NumberSucellMaturado(NumberMatureted){
-    fs.appendFile('./numero_maturado.txt', `${NumberMatureted}\n`, (err) => {
+async function NumberSucellMaturado(NumberMatureted, savePatch){
+    fs.appendFile(savePatch, `${NumberMatureted}\n`, (err) => {
         if (err) throw err;
         console.log(`${numbersMaturado} Numeros Maturados`);
     });
@@ -94,13 +97,13 @@ try{
 }
 };
 
-async function removeNumber(){
-    const fileContent = await fs.promises.readFile('./numeros.txt', 'utf8');
+async function removeNumber(phoneNumber, patchFileCrua){
+    const fileContent = await fs.promises.readFile(patchFileCrua, 'utf8');
     const phoneNumbers = fileContent.split('\n');
     const firstPhoneNumber = phoneNumbers.shift();
 
     const newFileContent = phoneNumbers.join('\n');
-    await fs.promises.writeFile('./numeros.txt', newFileContent, 'utf8');
+    await fs.promises.writeFile(patchFileCrua, newFileContent, 'utf8');
 };
 
 module.exports = getNumber;

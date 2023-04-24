@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require("fs");
-const test = require('../lists/phone_01.txt')
+const test = require('../lists_maturada/phone_01.txt')
 
 
 const messages = "Olá, Bom dia!"
@@ -81,12 +81,12 @@ async function phoneNotFound(phone, patchFile){
 };
 
 async function removePhone(patchFile){
-    const fileContent = await fs.promises.readFile(patchFile, 'utf8');
+    const fileContent = await fs.promises.readFile('listas_crua/phone_01.txt', 'utf8');
     const phoneNumbers = fileContent.split('\n');
     const firstPhoneNumber = phoneNumbers.shift();
 
     const newFileContent = phoneNumbers.join('\n');
-    await fs.promises.writeFile(patchFile, newFileContent, 'utf8');
+    await fs.promises.writeFile('listas_crua/phone_01.txt', newFileContent, 'utf8');
 };
 
 
